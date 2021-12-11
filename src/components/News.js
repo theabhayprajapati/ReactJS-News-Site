@@ -2,7 +2,21 @@ import React, { Component } from 'react'
 import Newsitem from './Newsitem'
 import PropTypes from 'prop-types'
 
+// TODO: 1st step: making the API
+//  TODO: 2nd Step: fetching { fetch() } the data with the await keyword before....
+// todo: 3rd step: making this data a json() with await ---> this is the parased data we have receiced
+
 export default class News extends Component {
+  static defaultProps = {
+    country: 'in',
+    pageSize: 8,
+    category: 'business',
+  }
+  static propTypes = {
+    country: PropTypes.string,
+    pageSize: PropTypes.number,
+    category: PropTypes.string,
+  }
   articles = [
     {
       source: {
@@ -359,15 +373,14 @@ export default class News extends Component {
   }
   // ! Componentimd Mount...
   async componentDidMount() {
-    let url =
-      'https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=1'
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=1`
     // *1st using the api's
 
     let data = await fetch(url)
     // *fetching the Api...
     let parsedDat = await data.json()
     // * parsing the data
-    console.log(parsedDat)
+    // console.log(parsedDat)
     //  *connecting the data with parased data.
     this.setState({ articles: parsedDat.articles })
     // ? this runn's after the render method...
@@ -376,7 +389,9 @@ export default class News extends Component {
   // * we will pull call from here(HTTP's)
   handleprevpage = async () => {
     console.log('previous page')
-    let url = `https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=${
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${
+      this.props.category
+    }&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=${
       this.state.page - 1
     }`
     let data = await fetch(url)
@@ -386,7 +401,7 @@ export default class News extends Component {
   }
   handlenextpage = async () => {
     console.log('next page')
-    let url = `https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=3`
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=3`
     let data = await fetch(url)
     let parsedDat = await data.json()
     console.log(parsedDat)
@@ -400,7 +415,7 @@ export default class News extends Component {
     return (
       <div className={'container my-3'}>
         <h2 className="text-center">Todays top headlines from NewsMonkey</h2>
-        <div className="row">
+        <div className="row ">
           {/* todo: */}
           {/* putting the data with the map.... */}
           {this.state.articles.map((element) => {
