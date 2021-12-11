@@ -352,11 +352,11 @@ export default class News extends Component {
   ]
   constructor() {
     super()
-    console.log('Hello Iam a cool boy')
     this.state = {
       articles: this.articles,
     }
   }
+  // ! Componentimd Mount... 
   // * we will pull call from here(HTTP's)
   render() {
     return (
@@ -364,12 +364,15 @@ export default class News extends Component {
         <h2>Todays top headlines</h2>
 
         <div className="row">
+          {/* important... */}
           {this.state.articles.map((element) => {
-            console.log(element)
+            // console.log(element)
             return (
               <div className="col-md-4 my-4 " key={element.url}>
                 <Newsitem
                   image={element.urlToImage}
+                  newfrom={element.source.name}
+                  author={element.author}
                   title={element.title.slice(0, 88)}
                   description={element.description.slice(0, 120)}
                   newsurl={element.url}
