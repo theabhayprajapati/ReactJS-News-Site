@@ -351,55 +351,106 @@ export default class News extends Component {
     },
   ]
   constructor() {
+    //? this runnes before the every one means FIRST....
     super()
     this.state = {
       articles: this.articles,
     }
   }
-  // ! Componentimd Mount... 
+  // ! Componentimd Mount...
+  async componentDidMount() {
+    let url =
+      'https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=1'
+    // *1st using the api's
+
+    let data = await fetch(url)
+    // *fetching the Api...
+    let parsedDat = await data.json()
+    // * parsing the data
+    console.log(parsedDat)
+    //  *connecting the data with parased data.
+    this.setState({ articles: parsedDat.articles })
+    // ? this runn's after the render method...
+    console.log('component did mount is running')
+  }
   // * we will pull call from here(HTTP's)
+  handleprevpage = async () => {
+    console.log('previous page')
+    let url = `https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=${
+      this.state.page - 1
+    }`
+    let data = await fetch(url)
+    let parsedDat = await data.json()
+    console.log(parsedDat)
+    this.setState({ articles: parsedDat.articles })
+  }
+  handlenextpage = async () => {
+    console.log('next page')
+    let url = `https://newsapi.org/v2/everything?q=tesla&from=2021-11-11&sortBy=publishedAt&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=3`
+    let data = await fetch(url)
+    let parsedDat = await data.json()
+    console.log(parsedDat)
+    this.setState({ articles: parsedDat.articles })
+    this.setState({
+      page: this.state.page + 1,
+    })
+  }
   render() {
+    console.log('render is runnning')
     return (
       <div className={'container my-3'}>
-        <h2>Todays top headlines</h2>
-
+        <h2 className="text-center">Todays top headlines from NewsMonkey</h2>
         <div className="row">
-          {/* important... */}
+          {/* todo: */}
+          {/* putting the data with the map.... */}
           {this.state.articles.map((element) => {
             // console.log(element)
             return (
               <div className="col-md-4 my-4 " key={element.url}>
                 <Newsitem
-                  image={element.urlToImage}
+                  image={
+                    element.urlToImage
+                      ? element.urlToImage
+                      : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUe_F_rOVclTGk3wKAn0suK85T--i6tCQJhg&usqp=CAU'
+                  }
                   newfrom={element.source.name}
                   author={element.author}
-                  title={element.title.slice(0, 88)}
-                  description={element.description.slice(0, 120)}
+                  title={element.title ? element.title.slice(0, 40) : 'Loading'}
+                  description={
+                    element.description
+                      ? element.description.slice(0, 120)
+                      : 'Loading'
+                  }
                   newsurl={element.url}
                 />
               </div>
             )
           })}
-
-          <div className="col-md-4">
-            <Newsitem
-              title="India won the hockey world finale 2022"
-              description=" llkajfa alskjfdal wloerowiuknv calfkja fweui kjsdlfasj fwerywerlk lksjflksjfo;iuweo rlksjhdfls fasoifuoiwer kh iu adffweeuoriwuro skfaslkfd ssfoiwyeor awsonv safkl woeruowi sjkvhckv oasfhyoiuwyawi fvjcvkjdhhf;liwoeri dfkasdflkaj rweurowe rfalkj h"
-            />
+          <div className="butttons">
+            <button
+              onClick={this.handleprevpage}
+              type="button"
+              className="btn btn-primary my-3"
+              style={{ borderRadius: '13.25rem' }}
+            >
+              &larr; Previous
+            </button>
+            <button
+              disabled={this.state.page <= 1}
+              onClick={this.handlenextpage}
+              type="button"
+              className="btn btn-secondary my-3 d-flex justify-content-between"
+              style={{
+                borderRadius: '13.25rem',
+                // fontFamily: 'Arial',
+                // backgroundColor: 'DodgerBlue',
+                // margin: '5px 5px 5px 15px',
+              }}
+            >
+              Next Articles &rarr;
+            </button>
           </div>
-          <div className="col-md-4">
-            <Newsitem
-              title="India won the hockey world finale 2022"
-              description=" llkajfa alskjfdal wloerowiuknv calfkja fweui kjsdlfasj fwerywerlk lksjflksjfo;iuweo rlksjhdfls fasoifuoiwer kh iu adffweeuoriwuro skfaslkfd ssfoiwyeor awsonv safkl woeruowi sjkvhckv oasfhyoiuwyawi fvjcvkjdhhf;liwoeri dfkasdflkaj rweurowe rfalkj h"
-            />
-          </div>
-          <Newsitem />
-          <Newsitem />
-          <Newsitem />
-          <Newsitem />
         </div>
-        <Newsitem />
-        <Newsitem />
       </div>
     )
   }
