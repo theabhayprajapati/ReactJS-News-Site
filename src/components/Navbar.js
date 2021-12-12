@@ -8,8 +8,8 @@ export default class Navbar extends Component {
     return (
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
-          <Link className="navbar-brand" to="/">
-            Navbar
+          <Link className="navbar-brand m-3" to="/">
+            <strong>NewsMonkey</strong>
           </Link>
           <button
             className="navbar-toggler"
@@ -57,17 +57,17 @@ export default class Navbar extends Component {
               </li>{' '}
               <li className="nav-item">
                 <Link className="nav-link" to="/science">
-                  science
+                  Science
                 </Link>
               </li>{' '}
               <li className="nav-item">
                 <Link className="nav-link" to="/sports">
-                  sports
+                  Sports
                 </Link>
               </li>{' '}
               <li className="nav-item">
                 <Link className="nav-link" to="/technology">
-                  technology
+                  Technology
                 </Link>
               </li>
             </ul>

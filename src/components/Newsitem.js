@@ -7,7 +7,15 @@ export default class Newsitem extends Component {
   }
 
   render() {
-    let { title, description, image, newsurl, author, newfrom } = this.props
+    let {
+      title,
+      description,
+      image,
+      newsurl,
+      author,
+      newfrom,
+      publishedAt,
+    } = this.props
     return (
       <div className="card">
         {' '}
@@ -19,8 +27,12 @@ export default class Newsitem extends Component {
           <p className="text-danger">
             <strong> {newfrom}</strong>
           </p>
-          <p className="my-2">
+          {/* <p className="my-2">
             Author: <strong>{author}</strong>
+          </p> */}
+          <p>
+            From <strong>{author}</strong> at {''}
+            <strong>{new Date(publishedAt).toDateString()} </strong>
           </p>
           <p className="card-text">{description}...</p>
           <a href={newsurl} className="btn btn-primary">

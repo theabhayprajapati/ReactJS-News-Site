@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Newsitem from './Newsitem'
 import PropTypes from 'prop-types'
-
+import InfiniteScroll from 'react-infinite-scroll-component'
 // TODO: 1st step: making the API
 //  TODO: 2nd Step: fetching { fetch() } the data with the await keyword before....
 // todo: 3rd step: making this data a json() with await ---> this is the parased data we have receiced
@@ -10,13 +10,17 @@ export default class News extends Component {
   static defaultProps = {
     country: 'in',
     pageSize: 8,
-    category: 'business',
+    category: 'general',
   }
   static propTypes = {
     country: PropTypes.string,
     pageSize: PropTypes.number,
     category: PropTypes.string,
   }
+  capitallizeFirstAlpa = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+  }
+
   articles = [
     {
       source: {
@@ -266,7 +270,7 @@ export default class News extends Component {
       },
       author: 'Griffin Davis',
       title:
-        "Updated Cybertruck Prototype Seen Running in Tesla Fremont Test Track: Here's the new Design",
+        "Tted Cybertruck Prototype Seen Running in Tesla Fremont Test Track: Here's the new Design",
       description: "Here's what the new version looks like.",
       url:
         'https://www.techtimes.com/articles/269234/20211210/updated-cybertruck-prototype-seen-running-tesla-fremont-test-track-heres.htm',
@@ -364,15 +368,24 @@ export default class News extends Component {
         '___\r\nSurging inflation is forcing people and businesses to adapt\r\nWASHINGTON (AP) A warehouse worker in Tennessee is running up against price increases that far exceed her modest pay raise. The owner… [+5613 chars]',
     },
   ]
-  constructor() {
+  constructor(props) {
     //? this runnes before the every one means FIRST....
-    super()
+    super(props)
     this.state = {
       articles: this.articles,
+      totalResults: 0,
+      page: 1,
     }
+
+    document.title = `${this.capitallizeFirstAlpa(
+      this.props.category,
+    )} - NewsMonkey`
   }
+
   // ! Componentimd Mount...
   async componentDidMount() {
+    this.props.setProgress(20)
+
     let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=1`
     // *1st using the api's
 
@@ -382,7 +395,35 @@ export default class News extends Component {
     // * parsing the data
     // console.log(parsedDat)
     //  *connecting the data with parased data.
-    this.setState({ articles: parsedDat.articles })
+    this.setState({
+      articles: parsedDat.articles,
+      totalResults: parsedDat.totalResults,
+    })
+    // ? this runn's after the render method...
+    this.props.setProgress(100)
+
+    console.log('component did mount is running')
+  }
+  async updatenews() {
+    this.props.setProgress(20)
+    const url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=1`
+    // *1st using the api's
+    this.props.setProgress(40)
+
+    let data = await fetch(url)
+
+    this.props.setProgress(60)
+    // *fetching the Api...
+    let parsedDat = await data.json()
+    this.props.setProgress(80)
+    // * parsing the data
+    console.log(parsedDat)
+    //  *connecting the data with parased data.
+    this.setState({
+      articles: parsedDat.articles,
+      totalResults: parsedDat.totalResults,
+    })
+    this.props.setProgress(100)
     // ? this runn's after the render method...
     console.log('component did mount is running')
   }
@@ -401,7 +442,7 @@ export default class News extends Component {
   }
   handlenextpage = async () => {
     console.log('next page')
-    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=3`
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=${this.props.page}`
     let data = await fetch(url)
     let parsedDat = await data.json()
     console.log(parsedDat)
@@ -410,38 +451,84 @@ export default class News extends Component {
       page: this.state.page + 1,
     })
   }
+  fetchMoreData = async () => {
+    this.setState({
+      page: this.state.page + 1,
+    })
+    let url = `https://newsapi.org/v2/top-headlines?country=us&category=${this.props.category}&apiKey=e3553a68781d448b87d4ebd624b4b888&pagesize=9&page=3`
+    // *1st using the api's
+
+    let data = await fetch(url)
+    // *fetching the Api...
+    let parsedDat = await data.json()
+    // * parsing the data
+    // console.log(parsedDat)
+    //  *connecting the data with parased data.
+    this.setState({
+      articles: this.state.articles.concat(parsedDat.articles),
+      totalResults: parsedDat.totalResults,
+    })
+    // ? this runn's after the render method...
+    console.log('component did mount is running')
+  }
   render() {
     console.log('render is runnning')
     return (
       <div className={'container my-3'}>
-        <h2 className="text-center">Todays top headlines from NewsMonkey</h2>
-        <div className="row ">
-          {/* todo: */}
-          {/* putting the data with the map.... */}
-          {this.state.articles.map((element) => {
-            // console.log(element)
-            return (
-              <div className="col-md-4 my-4 " key={element.url}>
-                <Newsitem
-                  image={
-                    element.urlToImage
-                      ? element.urlToImage
-                      : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUe_F_rOVclTGk3wKAn0suK85T--i6tCQJhg&usqp=CAU'
-                  }
-                  newfrom={element.source.name}
-                  author={element.author}
-                  title={element.title ? element.title.slice(0, 40) : 'Loading'}
-                  description={
-                    element.description
-                      ? element.description.slice(0, 120)
-                      : 'Loading'
-                  }
-                  newsurl={element.url}
-                />
-              </div>
-            )
-          })}
-          <div className="butttons">
+        <h2
+          className="text-center"
+          style={{ fontFamily: 'Impact,Charcoal,sans-serif' }}
+        >
+          Todays top headlines from NewsMonkey
+        </h2>
+        <h2 className="text-center" style={{}}>
+          on
+          <u>
+            {''}
+            {this.capitallizeFirstAlpa(this.props.category)} News
+          </u>
+        </h2>
+        <InfiniteScroll
+          dataLength={this.state.articles.length}
+          next={this.fetchMoreData}
+          hasMore={this.state.articles.length !== this.state.totalResults}
+          loader={<h4>Loading...</h4>}
+        >
+          <div className="container">
+            <div className="row ">
+              {/* todo: */}
+              {/* putting the data with the map.... */}
+
+              {this.state.articles.map((element) => {
+                // console.log(element)
+                return (
+                  <div className="col-md-4 my-4 " key={element.url}>
+                    <Newsitem
+                      image={
+                        element.urlToImage
+                          ? element.urlToImage
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUe_F_rOVclTGk3wKAn0suK85T--i6tCQJhg&usqp=CAU'
+                      }
+                      newfrom={element.source.name}
+                      author={element.author}
+                      publishedAt={element.publishedAt.slice(0, 10)}
+                      title={
+                        element.title ? element.title.slice(0, 40) : 'Loading'
+                      }
+                      description={
+                        element.description
+                          ? element.description.slice(0, 120)
+                          : 'Loading'
+                      }
+                      newsurl={element.url}
+                    />
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </InfiniteScroll>
+        {/* <div className="butttons">
             <button
               onClick={this.handleprevpage}
               type="button"
@@ -464,8 +551,8 @@ export default class News extends Component {
             >
               Next Articles &rarr;
             </button>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </div>
     )
   }
