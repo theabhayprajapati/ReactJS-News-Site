@@ -1,22 +1,19 @@
-import React, { Component } from 'react'
+import React, { Component, useEffect,useState } from 'react'
 import Newsitem from './Newsitem'
 import PropTypes from 'prop-types'
 import InfiniteScroll from 'react-infinite-scroll-component'
 // TODO: 1st step: making the API
 //  TODO: 2nd Step: fetching { fetch() } the data with the await keyword before....
 // todo: 3rd step: making this data a json() with await ---> this is the parased data we have receiced
-
-export default class News extends Component {
-  static defaultProps = {
-    country: 'in',
-    pageSize: 8,
-    category: 'general',
-  }
-  static propTypes = {
-    country: PropTypes.string,
-    pageSize: PropTypes.number,
-    category: PropTypes.string,
-  }
+document.title = `${this.capitallizeFirstAlpa(
+  this.props.category,
+)} - NewsMonkey`
+const  News =()=> {
+  const [articles, setarticles] = useState([])
+  const [totalResults, settotalResults] = useState(0)
+  const [loading, setloading] = useState(true)
+  const [page, setpage] = useState(1)
+  
   capitallizeFirstAlpa = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1)
   }
@@ -371,15 +368,9 @@ export default class News extends Component {
   constructor(props) {
     //? this runnes before the every one means FIRST....
     super(props)
-    this.state = {
-      articles: this.articles,
-      totalResults: 0,
-      page: 1,
-    }
+  
 
-    document.title = `${this.capitallizeFirstAlpa(
-      this.props.category,
-    )} - NewsMonkey`
+    
   }
 
   // ! Componentimd Mount...
@@ -557,3 +548,16 @@ export default class News extends Component {
     )
   }
 }
+
+News.defaultProps = {
+  country: 'in',
+  pageSize: 8,
+  category: 'general',
+}
+News.propTypes = {
+  country: PropTypes.string,
+  pageSize: PropTypes.number,
+  category: PropTypes.string,
+}
+
+export default News
