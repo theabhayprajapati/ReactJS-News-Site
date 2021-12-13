@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom'
 const Navbar = () => {
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <Link className="navbar-brand m-3" to="/">
+      <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+        <Link className="navbar-brand m-1" to="/">
           <strong>NewsMonkey</strong>
         </Link>
         <button
